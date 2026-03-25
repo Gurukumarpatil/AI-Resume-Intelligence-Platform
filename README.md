@@ -102,7 +102,7 @@ http://localhost:5173
 
 ## 👨‍💻 Author
 
-Your Name
+Guru Kumar
 
 ---
 
