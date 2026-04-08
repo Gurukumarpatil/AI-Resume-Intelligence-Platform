@@ -1,26 +1,27 @@
-# AI Resume Builder 🚀
+# 🚀 AI Resume Builder
 
-A full-stack MERN application that allows users to create, preview, and download professional resumes.
+A full-stack MERN application that allows users to create, customize, and download professional resumes with multiple templates and live preview.
 
 ---
 
 ## 🔥 Features
 
 * 📝 Enter resume details (Name, Email, Skills, Education, Experience)
-* 👀 Live resume preview
+* 👀 Live resume preview (real-time updates)
 * 🎨 Multiple templates (Classic & Modern)
 * 📄 Download resume as PDF
 * 💾 Save resumes to MongoDB
-* 📊 View stored resumes
+* ✏️ Edit and update resumes
+* 🗑 Delete resumes
 
 ---
 
 ## 🛠 Tech Stack
 
-* Frontend: React (Vite)
-* Backend: Node.js, Express
-* Database: MongoDB (Local)
-* PDF Generation: html2pdf.js
+* **Frontend:** React (Vite)
+* **Backend:** Node.js, Express
+* **Database:** MongoDB (Local)
+* **PDF Generation:** html2pdf.js
 
 ---
 
@@ -35,74 +36,29 @@ AI Resume Intelligence Platform/
 
 ---
 
-## ⚙️ Setup Instructions
 
-### 1. Clone the repository
 
-```
-git clone https://github.com/YOUR_USERNAME/AI-Resume-Intelligence-Platform.git
-cd AI-Resume-Intelligence-Platform
-```
+## 📸 Key Functionalities
 
----
-
-### 2. Setup Backend
-
-```
-cd server
-npm install
-```
-
-Create `.env` file:
-
-```
-MONGO_URI=mongodb://127.0.0.1:27017/resumeDB
-```
-
-Run server:
-
-```
-node index.js
-```
-
----
-
-### 3. Setup Frontend
-
-```
-cd client
-npm install
-npm run dev
-```
-
-Open:
-
-```
-http://localhost:5173
-```
-
----
-
-## 📸 Features Preview
-
-* Live Resume Builder UI
-* Template Switching
-* PDF Download
+* Create resume with live preview
+* Switch between templates
+* Export resume as PDF
+* Perform full CRUD operations
 
 ---
 
 ## 💡 Future Improvements
 
-* AI resume suggestions 🤖
-* Edit & update resumes
-* Multiple professional templates
-* Authentication (login/signup)
+* 🤖 AI Resume Analyzer (suggest improvements)
+* 🎨 More professional templates
+* 🔐 User authentication (login/signup)
+* 🌐 Deploy to cloud
 
 ---
 
 ## 👨‍💻 Author
 
-Guru Kumar
+Gurukumar Patil
 
 ---
 
@@ -110,3 +66,4 @@ Guru Kumar
 
 * `.env` and `node_modules` are ignored
 * Uses local MongoDB for development
+* Built as a full-stack MERN project
