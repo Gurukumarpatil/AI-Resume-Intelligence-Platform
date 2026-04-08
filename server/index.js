@@ -1,52 +1,67 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// CONNECT TO MONGODB
+// DB connect
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log("Mongo Error:", err));
 
-// SCHEMA
-const Resume = mongoose.model("Resume", {
+// Schema
+const ResumeSchema = new mongoose.Schema({
   name: String,
   email: String,
-  skills: [String]
+  skills: [String],
+  education: String,
+  experience: String,
 });
 
-// POST - Save Resume
+const Resume = mongoose.model("Resume", ResumeSchema);
+
+// CREATE
 app.post("/save", async (req, res) => {
   try {
     const newResume = new Resume(req.body);
     await newResume.save();
-
-    console.log("Saved to DB");
-    res.send("Saved to DB");
+    res.send("Saved");
   } catch (err) {
-    console.log(err);
     res.status(500).send("Error saving");
   }
 });
 
-// GET - Fetch all resumes
+// READ
 app.get("/resumes", async (req, res) => {
+  const data = await Resume.find();
+  res.json(data);
+});
+
+// UPDATE
+app.put("/update/:id", async (req, res) => {
   try {
-    const data = await Resume.find();
-    res.json(data);
+    const updated = await Resume.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error fetching data");
+    res.status(500).send("Error updating");
   }
 });
 
-// TEST ROUTE
-app.get("/", (req, res) => {
-  res.send("API Working");
+// DELETE
+app.delete("/delete/:id", async (req, res) => {
+  try {
+    await Resume.findByIdAndDelete(req.params.id);
+    res.send("Deleted");
+  } catch (err) {
+    res.status(500).send("Error deleting");
+  }
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));
