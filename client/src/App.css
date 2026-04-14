@@ -362,6 +362,10 @@
   min-height: 400px;
 }
 
+.resume-preview p {
+  white-space: pre-wrap;
+}
+
 /* ── Classic Template ── */
 .resume-preview .classic-template h1 {
   font-size: 28px;
@@ -883,6 +887,129 @@
   font-size: 14px;
   line-height: 1.7;
   color: var(--text-secondary);
+}
+
+/* ── Analysis Results ── */
+.analysis-results {
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0f9ff, #f8fafc);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+.analysis-results h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.analysis-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  margin-bottom: 16px;
+}
+
+.score-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+
+.analysis-section {
+  margin-bottom: 14px;
+}
+
+.analysis-section h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.analysis-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.analysis-tag {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.analysis-tag--warning {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.analysis-suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.analysis-suggestions li {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding: 6px 0 6px 16px;
+  position: relative;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.04);
+}
+
+.analysis-suggestions li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.analysis-suggestions li:last-child {
+  border-bottom: none;
+}
+
+.analysis-raw {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  background: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(37, 99, 235, 0.06);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.analysis-error {
+  font-size: 13px;
+  color: #ef4444;
+  font-weight: 600;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.1);
 }
 
 /* ── Responsive ── */

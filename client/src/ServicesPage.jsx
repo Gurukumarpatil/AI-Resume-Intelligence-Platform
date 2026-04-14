@@ -1,6 +1,6 @@
 import "./ServicesPage.css";
 
-function ServicesPage({ onSelectBuilder, onBack }) {
+function ServicesPage({ onSelectBuilder, onSelectAnalyzer, onBack }) {
   return (
     <div className="services-page">
       {/* Navbar */}
@@ -76,7 +76,8 @@ function ServicesPage({ onSelectBuilder, onBack }) {
           {/* AI Resume Analyser Card */}
           <div
             id="service-analyser"
-            className="service-card service-card--analyser service-card--disabled"
+            className="service-card service-card--analyser"
+            onClick={onSelectAnalyzer}
           >
             <div className="service-icon service-icon--analyser">
               <svg
@@ -99,7 +100,21 @@ function ServicesPage({ onSelectBuilder, onBack }) {
               Upload your resume and get instant AI-powered feedback on
               formatting, keywords, and overall strength.
             </p>
-            <span className="coming-soon-badge">Coming Soon</span>
+            <span className="service-action service-action--analyser">
+              Analyze Resume
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import html2pdf from "html2pdf.js";
 import GetStarted from "./GetStarted";
 import ServicesPage from "./ServicesPage";
 import TemplateSelect from "./TemplateSelect";
+import AnalyzerPage from "./AnalyzerPage";
 import "./App.css";
 
 function App() {
@@ -22,6 +23,8 @@ function App() {
 
   const [resumes, setResumes] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // FETCH DATA
   const fetchResumes = async () => {
@@ -94,6 +97,45 @@ function App() {
     setEditingId(r._id);
   };
 
+  // ANALYZE
+  const handleAnalyze = async () => {
+    const resumeText = [
+      name && `Name: ${name}`,
+      email && `Email: ${email}`,
+      phone && `Phone: ${phone}`,
+      address && `Address: ${address}`,
+      linkedin && `LinkedIn: ${linkedin}`,
+      skills && `Skills: ${skills}`,
+      education && `Education: ${education}`,
+      experience && `Experience: ${experience}`,
+      hasProjects && `Projects: ${projects.filter(p => p.name.trim() || p.description.trim()).map(p => `${p.name}: ${p.description}`).join("; ")}`,
+      interests && `Interests: ${interests}`,
+    ].filter(Boolean).join("\n");
+
+    if (!resumeText.trim()) {
+      alert("Please fill in some resume details before analyzing.");
+      return;
+    }
+
+    setLoading(true);
+    setAnalysis(null);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeText }),
+      });
+      const data = await res.json();
+      setAnalysis(data);
+    } catch (err) {
+      alert("Analysis failed. Make sure the server and Ollama are running.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // PDF
   const downloadPDF = () => {
     const element = document.getElementById("resume");
@@ -146,6 +188,27 @@ function App() {
     ) : null
   );
 
+  const parseSkills = (skillsText) => {
+    if (!skillsText) return [];
+    return skillsText.split('\n').filter(line => line.trim()).map(line => {
+      const idx = line.indexOf(':');
+      if (idx !== -1) {
+        return {
+          category: line.substring(0, idx).trim(),
+          items: line.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean),
+          isCategory: true
+        };
+      } else {
+        return {
+          category: null,
+          items: line.split(',').map(s => s.trim()).filter(Boolean),
+          isCategory: false
+        };
+      }
+    });
+  };
+  const parsedSkillsList = parseSkills(skills);
+
   const Classic = () => (
     <div className="classic-template">
       <h1>{name || "Your Name"}</h1>
@@ -155,11 +218,16 @@ function App() {
       {skills && (
         <>
           <h3>Skills</h3>
-          <ul>
-            {skills.split(",").map((s, i) => (
-              <li key={i}>{s.trim()}</li>
+          <div className="resume-skills-list">
+            {parsedSkillsList.map((skillGroup, i) => (
+              <div key={i} style={{ marginBottom: skillGroup.isCategory ? '8px' : '0' }}>
+                {skillGroup.isCategory && <strong style={{ display: 'block', fontSize: '13px', color: 'var(--text-primary)', marginBottom: '4px' }}>{skillGroup.category}:</strong>}
+                <ul>
+                  {skillGroup.items.map((s, j) => <li key={j}>{s}</li>)}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </>
       )}
 
@@ -202,7 +270,15 @@ function App() {
       </div>
 
       <div className="modern-body">
-        {skills && <p><b>Skills:</b> {skills}</p>}
+        {skills && (
+          <div className="modern-skills">
+            {parsedSkillsList.map((skillGroup, i) => (
+               <p key={i} style={{ marginBottom: '4px' }}>
+                 <b>{skillGroup.isCategory ? `${skillGroup.category}:` : 'Skills:'}</b> {skillGroup.items.join(', ')}
+               </p>
+            ))}
+          </div>
+        )}
         {education && <p><b>Education:</b> {education}</p>}
         {experience && <p><b>Experience:</b> {experience}</p>}
         {hasProjects && projects.filter(p => p.name.trim() || p.description.trim()).map((p, i) => (
@@ -224,7 +300,12 @@ function App() {
       {skills && (
         <div className="minimal-section">
           <h3>Skills</h3>
-          <p>{skills}</p>
+          {parsedSkillsList.map((skillGroup, i) => (
+             <p key={i}>
+               {skillGroup.isCategory ? <strong>{skillGroup.category}: </strong> : null}
+               {skillGroup.items.join(', ')}
+             </p>
+          ))}
         </div>
       )}
 
@@ -287,11 +368,16 @@ function App() {
         {skills && (
           <div className="exec-section">
             <h3>Core Competencies</h3>
-            <div className="exec-skills">
-              {skills.split(",").map((s, i) => (
-                <span key={i} className="exec-skill-tag">{s.trim()}</span>
-              ))}
-            </div>
+            {parsedSkillsList.map((skillGroup, i) => (
+              <div key={i} style={{ marginBottom: skillGroup.isCategory ? '8px' : '0' }}>
+                {skillGroup.isCategory && <strong style={{ display: 'block', fontSize: '12px', marginBottom: '6px' }}>{skillGroup.category}:</strong>}
+                <div className="exec-skills">
+                  {skillGroup.items.map((s, j) => (
+                    <span key={j} className="exec-skill-tag">{s}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
         {hasProjects && (
@@ -327,11 +413,16 @@ function App() {
         {skills && (
           <div className="creative-sidebar-section">
             <h4>Skills</h4>
-            <ul>
-              {skills.split(",").map((s, i) => (
-                <li key={i}>{s.trim()}</li>
-              ))}
-            </ul>
+            {parsedSkillsList.map((skillGroup, i) => (
+              <div key={i} style={{ marginBottom: skillGroup.isCategory ? '10px' : '0' }}>
+                {skillGroup.isCategory && <strong style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.9)', marginBottom: '4px' }}>{skillGroup.category}:</strong>}
+                <ul>
+                  {skillGroup.items.map((s, j) => (
+                    <li key={j}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         )}
         {interests && (
@@ -383,10 +474,15 @@ function App() {
         {skills && (
           <div className="prof-skills">
             <h4>Skills</h4>
-            {skills.split(",").map((s, i) => (
-              <div key={i} className="prof-skill-bar">
-                <span>{s.trim()}</span>
-                <div className="prof-bar"><div className="prof-bar-fill" /></div>
+            {parsedSkillsList.map((skillGroup, i) => (
+              <div key={i} style={{ marginBottom: skillGroup.isCategory ? '12px' : '4px' }}>
+                {skillGroup.isCategory && <strong style={{ display: 'block', fontSize: '10px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', marginBottom: '6px' }}>{skillGroup.category}</strong>}
+                {skillGroup.items.map((s, j) => (
+                  <div key={j} className="prof-skill-bar">
+                    <span>{s}</span>
+                    <div className="prof-bar"><div className="prof-bar-fill" /></div>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -457,9 +553,15 @@ function App() {
     return (
       <ServicesPage
         onSelectBuilder={() => setPage("templateSelect")}
+        onSelectAnalyzer={() => setPage("analyzer")}
         onBack={() => setPage("getStarted")}
       />
     );
+  }
+
+  // ── Analyzer Page ──
+  if (page === "analyzer") {
+    return <AnalyzerPage onBack={() => setPage("services")} />;
   }
 
   // ── Template Selection Page ──
@@ -551,31 +653,34 @@ function App() {
 
           <div className="form-group">
             <label>Skills</label>
-            <input
-              className="form-input"
+            <textarea
+              className="form-input form-textarea"
               placeholder="React, Node.js, Python"
               value={skills}
               onChange={e => setSkills(e.target.value)}
+              rows={3}
             />
           </div>
 
           <div className="form-group">
             <label>Education</label>
-            <input
-              className="form-input"
+            <textarea
+              className="form-input form-textarea"
               placeholder="B.Tech in Computer Science"
               value={education}
               onChange={e => setEducation(e.target.value)}
+              rows={3}
             />
           </div>
 
           <div className="form-group">
             <label>Experience</label>
-            <input
-              className="form-input"
+            <textarea
+              className="form-input form-textarea"
               placeholder="2 years at Google"
               value={experience}
               onChange={e => setExperience(e.target.value)}
+              rows={3}
             />
           </div>
 
@@ -616,11 +721,12 @@ function App() {
 
           <div className="form-group">
             <label>Other Interests</label>
-            <input
-              className="form-input"
+            <textarea
+              className="form-input form-textarea"
               placeholder="Open source, Photography, Hiking"
               value={interests}
               onChange={e => setInterests(e.target.value)}
+              rows={2}
             />
           </div>
 
@@ -638,6 +744,9 @@ function App() {
             </button>
             <button className="btn-pdf" onClick={downloadPDF}>
               📄 PDF
+            </button>
+            <button className="btn-pdf" onClick={handleAnalyze} disabled={loading}>
+              {loading ? "⏳ Analyzing..." : "🤖 Analyze"}
             </button>
           </div>
         </div>
@@ -665,6 +774,48 @@ function App() {
               </div>
             </div>
           ))}
+
+          {/* Analysis Results */}
+          {analysis && (
+            <div className="analysis-results">
+              <h3>🤖 AI Analysis</h3>
+              {analysis.score !== undefined && (
+                <div className="analysis-score">
+                  <span className="score-label">ATS Score</span>
+                  <span className="score-value">{analysis.score}/100</span>
+                </div>
+              )}
+              {analysis.missing_keywords && analysis.missing_keywords.length > 0 && (
+                <div className="analysis-section">
+                  <h4>Missing Keywords</h4>
+                  <div className="analysis-tags">
+                    {analysis.missing_keywords.map((kw, i) => (
+                      <span key={i} className="analysis-tag analysis-tag--warning">{typeof kw === 'object' && kw !== null ? Object.values(kw).join(': ') : kw}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {analysis.suggestions && analysis.suggestions.length > 0 && (
+                <div className="analysis-section">
+                  <h4>Suggestions</h4>
+                  <ul className="analysis-suggestions">
+                    {analysis.suggestions.map((s, i) => (
+                      <li key={i}>{typeof s === 'object' && s !== null ? Object.values(s).join(': ') : s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {analysis.raw && (
+                <div className="analysis-section">
+                  <h4>Raw Response</h4>
+                  <p className="analysis-raw">{analysis.raw}</p>
+                </div>
+              )}
+              {analysis.error && (
+                <p className="analysis-error">⚠️ {analysis.error}</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
