@@ -86,7 +86,7 @@ User → React UI → Express API →
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/AI-Resume-Intelligence-Platform.git
+git clone https://github.com/Gurukumarpatil/AI-Resume-Intelligence-Platform.git
 cd AI-Resume-Intelligence-Platform
 ```
 
